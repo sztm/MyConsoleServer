@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Header Console</title>
+    <script>
+        function submitHandler(event) {
+            event.preventDefault();
+
+            var xhr = new XMLHttpRequest();
+            var form = document.querySelector('#multipart_form form');
+            var form_data = new FormData(form);
+
+            xhr.onload = function() {
+                try {
+                    var resp = JSON.parse(xhr.response);
+                    console.log(resp);
+                    document.querySelector('#request_header pre').innerHTML = JSON.stringify(resp.Request.Header, null, 4);
+                    document.querySelector('#response_header h3').innerHTML = 'Response Headers';
+                    document.querySelector('#response_header pre').innerHTML = xhr.getAllResponseHeaders();
+                    document.querySelector('#request_body pre').innerHTML = JSON.stringify({
+                        body: resp.Request.Body,
+                        files: resp.Request.Files
+                    }, null, 4);;
+                } catch(e) {
+                    console.error(e);
+                    console.log(xhr.response);
+                }
+            }
+
+            xhr.onerror = function(error) {
+                console.error(error);
+            }
+
+            xhr.open("POST", '/multipartform');
+            xhr.send(form_data);
+
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <section id="raw_form">
+        <h3>Raw Form</h3>
+        <form action="/rawform" method="POST">
+            <label for="input_text">テキスト</label><input type="text" name="input_text" id="input_text"><br>
+            <input type="submit" value="Send">
+        </form>
+    </section>
+    <section id="multipart_form">
+        <h3>Multipart Form</h3>
+        <form method="POST" onsubmit="return submitHandler(event);">
+            <label for="input_text">テキスト</label><input type="text" name="input_text" id="input_text"><br>
+            <input type="file" name="input_file" id="input_file"><br>
+            <input type="submit" value="Send">
+        </form>
+    </section>
+    <section id="request_header">
+        <h3>Request Headers Monitored in Express</h3>
+        <pre><%= req_headers %></pre>
+    </section>
+    <section id="response_header">
+        <h3>Response Headers Monitored in Express</h3>
+        <pre><%= res_headers %></pre>
+    </section>
+    <section id="request_body">
+        <h3>Request Body Monitored in Express</h3>
+        <pre></pre>
+    </section>
+</body>
+</html>
