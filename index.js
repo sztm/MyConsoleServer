@@ -82,7 +82,9 @@ app.use('/status/:statusCode([0-9]{3})', statusHandler)
 app.get('/', rootHandler);
 
 
-const staticfunc = express.static(__dirname + '/public')
+const staticfunc = express.static(__dirname + '/public', {
+    maxAge: 600000
+})
 app.use('/static', (req, res, next) => {
     staticfunc(req, res, next)
     accessLogStream.write(JSON.stringify({
