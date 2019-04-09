@@ -82,6 +82,17 @@ app.use('/status/:statusCode([0-9]{3})', statusHandler)
 app.get('/', rootHandler);
 
 
+const staticfunc = express.static(__dirname + '/public')
+app.use('/static', (req, res, next) => {
+    staticfunc(req, res, next)
+    accessLogStream.write(JSON.stringify({
+        Header: {
+            Request: req.headers,
+            Response: res.getHeaders()
+        }
+    }, null, 4));
+});
+
 
 /*
  *  ログ出力部
