@@ -70,6 +70,7 @@ app.post('/post', postHandler);
 app.get('/get', getHandler);
 
 // TEST API
+app.get('/test/*', testHandler);
 app.get('/test', testHandler);
 
 // 任意のステータスを返す API
@@ -211,7 +212,8 @@ function statusHandler(req, res, next) {
 }
 
 function testHandler(req, res, next) {
-    res.setHeader('Set-Cookie', 'foo=bar'); // サンプル
+  setTimeout(function() {
+    // res.setHeader('Pragma', 'no-cache'); // サンプル
     let res_body = {
         Request: {
             Header: req.headers,
@@ -223,4 +225,5 @@ function testHandler(req, res, next) {
     res.json(res_body);
 
     next();
+  }, 20000);
 }
