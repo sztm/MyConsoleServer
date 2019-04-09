@@ -108,7 +108,7 @@ function rootHandler(req, res, next) {
 
     const req_headers = req.headers;
     const res_headers = res.getHeaders();
-    res.stauts = 200;
+    res.status(200);
     res.render('index', {
         req_headers : JSON.stringify(req_headers, null, 4),
         res_headers : JSON.stringify(res_headers, null, 4),
@@ -125,7 +125,7 @@ function getHandler(req, res, next) {
         }
     };
 
-    res.status = 200;
+    res.status(200);
     res.json(res_body);
 
     next();
@@ -139,7 +139,7 @@ function postHandler(req, res, next) {
         }
     };
 
-    res.status = 200;
+    res.status(200);
     res.json(res_body);
 
     accessLogStream.write(JSON.stringify({
@@ -164,7 +164,7 @@ function multipartHandler(req, res, next) {
             Files: files,
         }
     };
-    res.status = 200;
+    res.status(200);
     res.json(res_body);
     res.end();
 
@@ -182,7 +182,7 @@ function rawformHandler(req, res, next) {
     const req_headers = req.headers;
     const res_headers = res.getHeaders();
     const req_body = req.body;
-    res.status = 200;
+    res.status(200);
     res.render('index', {
         req_headers : JSON.stringify(req_headers, null, 4),
         res_headers : JSON.stringify(res_headers, null, 4),
@@ -219,7 +219,7 @@ function testHandler(req, res, next) {
         }
     };
 
-    res.status = 200;
+    res.status(200);
     res.json(res_body);
 
     next();
