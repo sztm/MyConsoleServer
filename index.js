@@ -9,6 +9,8 @@ const multer = require('multer');
 const upload = multer();
 // const upload = multer({dist: 'uploads/'}); // ローカルにマルチパートアップロードのファイルを保存する
 
+const port = 8000;
+
 var logDirectory = path.join(__dirname, 'logs');
 
 // create a rotating write stream
@@ -96,7 +98,8 @@ app.use((req, res) => {
     });
 });
 
-app.listen(8000);
+app.listen(port);
+console.log(`listening in ${port} ...`);
 
 
 /*
