@@ -72,6 +72,9 @@ app.get('/get', getHandler);
 // TEST API
 app.get('/test', testHandler);
 
+// 任意のステータスを返す API
+app.use('/status/:statusCode([0-9]{3})', statusHandler)
+
 // トップページ
 app.get('/', rootHandler);
 
@@ -189,6 +192,20 @@ function rawformHandler(req, res, next) {
     accessLogStream.write(JSON.stringify({
         RequestBody: req.body
     }, null, 4));
+
+    next();
+}
+
+function statusHandler(req, res, next) {
+  res.status(req.params.statusCode);
+  let res_body = {
+        Request: {
+            Header: req.headers,
+            Query: req.query
+        }
+    };
+
+    res.json(res_body);
 
     next();
 }
