@@ -1,118 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Request Tester</title>
     <style>
-        html, body {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            font-size: small;
-        }
-        section {
-            padding: 5px 15px;
-        }
-        h1, h2, h3 {
-            margin: 5px 0;
-        }
-        form, input {
-            margin: 0;
-            padding: 0;
-        }
+      html,
+      body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        font-size: small;
+      }
+      section {
+        padding: 5px 15px;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 5px 0;
+      }
+      form,
+      input {
+        margin: 0;
+        padding: 0;
+      }
 
-        label {
-            margin-right: 5px;
-        }
+      label {
+        margin-right: 5px;
+      }
     </style>
     <script>
-        function submitHandler(event) {
-            event.preventDefault();
+      function submitHandler(event) {
+        event.preventDefault();
 
-            var xhr = new XMLHttpRequest();
-            var form = document.querySelector('#multipart_form form');
-            var form_data = new FormData(form);
+        var xhr = new XMLHttpRequest();
+        var form_data = new FormData();
+        form_data.append(
+          "input_text",
+          document.querySelector("#input_text_multi").value
+        );
+        input_file = document.querySelector("#input_file_multi");
 
-            xhr.onload = function() {
-                try {
-                    var resp = JSON.parse(xhr.response);
-                    console.log(resp);
-                    document.querySelector('#request_header pre').innerHTML = JSON.stringify(resp.Request.Header, null, 4);
-                    document.querySelector('#response_header h3').innerHTML = 'Response Headers';
-                    document.querySelector('#response_header pre').innerHTML = xhr.getAllResponseHeaders();
-                    document.querySelector('#request_body pre').innerHTML = JSON.stringify({
-                        body: resp.Request.Body,
-                        files: resp.Request.Files
-                    }, null, 4);;
-                } catch(e) {
-                    console.error(e);
-                    console.log(xhr.response);
-                }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          const blob = new Blob([e.target.result], {
+            type: "application/x-www-urlencoded"
+          });
+          form_data.append("input_text", blob, "file.dat");
+
+          xhr.onload = function() {
+            try {
+              var resp = JSON.parse(xhr.response);
+              console.log(resp);
+              document.querySelector(
+                "#request_header pre"
+              ).innerHTML = JSON.stringify(resp.Request.Header, null, 4);
+              document.querySelector("#response_header h3").innerHTML =
+                "Response Headers";
+              document.querySelector(
+                "#response_header pre"
+              ).innerHTML = xhr.getAllResponseHeaders();
+              document.querySelector(
+                "#request_body pre"
+              ).innerHTML = JSON.stringify(
+                {
+                  body: resp.Request.Body,
+                  files: resp.Request.Files
+                },
+                null,
+                4
+              );
+            } catch (e) {
+              console.error(e);
+              console.log(xhr.response);
             }
+          };
 
-            xhr.onerror = function(error) {
-                console.error(error);
-            }
+          xhr.onerror = function(error) {
+            console.error(error);
+          };
 
-            xhr.open("POST", '/post/multipart');
-            xhr.send(form_data);
+          xhr.open("POST", "/post/multipart");
+          xhr.send(form_data);
+        };
 
-            return false;
-        }
+        // Read in the image file as a data URL.
+        reader.readAsArrayBuffer(input_file.files[0]);
+
+        return false;
+      }
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <section id="overview">
-        <a href="/"><h2>Request Tester</h2></a>
+      <a href="/"><h2>Request Tester</h2></a>
     </section>
     <section id="request_header">
-        <h3>Request Headers Monitored in Express</h3>
-        <pre><%= req_headers %></pre>
+      <h3>Request Headers Monitored in Express</h3>
+      <pre><%= req_headers %></pre>
     </section>
     <section id="response_header">
-        <h3>Response Headers Monitored in Express</h3>
-        <pre><%= res_headers %></pre>
+      <h3>Response Headers Monitored in Express</h3>
+      <pre><%= res_headers %></pre>
     </section>
     <section id="request_body">
-        <h3>Request Body Monitored in Express</h3>
-        <pre><%= req_body %></pre>
+      <h3>Request Body Monitored in Express</h3>
+      <pre><%= req_body %></pre>
     </section>
-    <hr>
+    <hr />
     <section id="raw_form">
-        <h3>Raw Form</h3>
-        <form action="/post/rawform" method="POST">
-            <label for="input_text">Text(input_text)</label><input type="text" name="input_text" id="input_text"><br>
-            <input type="submit" value="Send">
-        </form>
+      <h3>Raw Form</h3>
+      <form action="/post/rawform" method="POST">
+        <label for="input_text">Text(input_text)</label
+        ><input type="text" name="input_text" id="input_text" /><br />
+        <input type="submit" value="Send" />
+      </form>
     </section>
     <section id="multipart_form">
-        <h3>Multipart Form by JavaScript</h3>
-        <form method="POST" onsubmit="return submitHandler(event);">
-            <label for="input_text">Text(input_text)</label><input type="text" name="input_text" id="input_text"><br>
-            <label for="input_text">File(input_file)</label><input type="file" name="input_file" id="input_file"><br>
-            <input type="submit" value="Send">
-        </form>
+      <h3>Multipart Form by JavaScript</h3>
+      <form method="POST" onsubmit="return submitHandler(event);">
+        <label for="input_text_multi">Text(input_text)</label
+        ><input type="text" name="input_text" id="input_text_multi" /><br />
+        <label for="input_file_multi">File(input_file)</label
+        ><input type="file" name="input_file" id="input_file_multi" /><br />
+        <input type="submit" value="Send" />
+      </form>
     </section>
     <section>
-        <h3>Link</h3>
-        <div>
-            <a href="/get">/get</a>
-            <div>just return json include request info</div>
-        </div>
-        <div>
-            <a href="/status">/status/XXX</a>
-            <div>return response with specified HTTP status code</div>
-        </div>
-        <div>
-            <a href="/test">/test</a>
-            <div>for temporary test</div>
-        </div>
-        <div>
-            <a href="/static">/static</a>
-            <div>return static file</div>
-        </div>
+      <h3>Link</h3>
+      <div>
+        <a href="/get">/get</a>
+        <div>just return json include request info</div>
+      </div>
+      <div>
+        <a href="/status">/status/XXX</a>
+        <div>return response with specified HTTP status code</div>
+      </div>
+      <div>
+        <a href="/test">/test</a>
+        <div>for temporary test</div>
+      </div>
+      <div>
+        <a href="/static">/static</a>
+        <div>return static file</div>
+      </div>
     </section>
-</body>
+  </body>
 </html>
